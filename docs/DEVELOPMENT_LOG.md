@@ -207,16 +207,14 @@ anon key) and probed the backend before building.
 
 **Findings / surprises:**
 - `SUPABASE_URL` in `JobObserver/.env`, `INGEST_BASE_URL`, and the CLI link
-  (`apps/api-functions/supabase/.temp/project-ref`) all point at the same project ref (`pfzeu...`).
+  (`apps/api-functions/supabase/.temp/project-ref`) all point at the same project ref (`<project-ref>`).
 - That host **does not resolve**: `curl` fails with "Could not resolve host", and Google DNS returns
   NXDOMAIN, while general internet access works (supabase.com and github.com answer 200).
-- `supabase projects list` (the CLI is logged in) shows 5 projects in the account, **none** with that
-  ref. Conclusion: the JobObserver Supabase project was deleted (or lives in another account).
-- Other projects exist in the account (belonging to other apps). They were deliberately **not** used:
-  pointing this app at them would read/write another application's data.
+- No real backend was used. (Account details were removed from this entry on request of the owner;
+  see "Pre-submission cleanup" below.)
 
-**Verification:** DNS/HTTP probes and the CLI listing above. No real-backend build was produced; no
-secrets were written to disk or printed.
+**Verification:** DNS/HTTP probes. No real-backend build was produced; no secrets were written to
+disk or printed.
 
 **Follow-ups:** ROADMAP R2 is now additionally blocked on (re)creating the backend: new project +
 `supabase db push --include-all` + seed + deploy the Edge Functions (docs/deploy.md in `JobObserver`),
@@ -309,3 +307,36 @@ products comes from general product knowledge, not from a fresh market survey.
 
 **Follow-ups:** R19 and R20 first (no prerequisites, highest risk), then R21, R4, and R3 with R5.
 D1-D9 go to the owner.
+
+## 2026-11-19 - Pre-submission cleanup
+
+**Intent:** Prepare the repository for use in sandboxed, offline coding sessions: remove statements
+that are no longer true, remove details about real accounts and infrastructure, and tell future
+sessions what they can and cannot do.
+
+**Done:**
+- ROADMAP: "Where the app stands" no longer says that nothing is committed; it now says the code is
+  committed and pushed and that `main` is not protected. R19 was reduced to the part that is still
+  open (protecting `main`) and stays `todo`. The line saying the app was never opened in a real
+  browser is unchanged on purpose, pending a manual browser check by the owner.
+- The entry "Attempt to launch against the real backend" was edited, with the owner's approval, as a
+  deliberate exception to the append-only rule: the project reference is replaced by a placeholder
+  and the details about the Supabase account were removed. What remains: the project host did not
+  resolve and no real backend was used.
+- CLAUDE.md: new section "Sandbox sessions (no network)" (mock backend only, environment, e2e
+  browsers, out-of-scope items, no desktop repo, verification on the desktop).
+
+**Findings / surprises:**
+- The entry "Roadmap re-plan from a full review" above still says that nothing is committed. It is history and was not changed; this entry supersedes it (the code was
+  committed and pushed afterwards).
+- The entry "Real-backend launch after the Supabase project was un-paused" still mentions the CLI's
+  project list and the account. It was outside the approved edit and was left for the owner to
+  decide.
+- The repository scan for other traces is reported to the owner in the session, not repeated here.
+
+**Verification:** `pnpm install`, `pnpm typecheck`, `pnpm test`, `pnpm build` were run after the
+edits; results are reported to the owner in the session. Only documentation was changed, so no
+behavior changed. **Not verified:** the manual browser check.
+
+**Follow-ups:** The owner reviews the diff before anything is committed. R19 (protect `main`) is
+still open.

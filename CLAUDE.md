@@ -52,6 +52,21 @@ change set:
 - When a test passes on first run, ask whether it can fail: mutate the code under test once (see the
   XSS test's verification in the development log).
 
+## Sandbox sessions (no network)
+
+Rules for sessions run in an isolated environment:
+
+- Mock backend only: `VITE_BACKEND=mock` (`pnpm dev:mock`). Do not create `.env.local`, do not run the
+  Supabase adapter against a real project, do not use real accounts.
+- Environment: no network except an npm mirror. Install pnpm with `npm i -g pnpm` (corepack cannot download it). Node 20 or newer is required.
+- e2e (Playwright): the desktop's built-in Chrome and a mobile viewport only. Firefox and WebKit are
+  not available.
+- Out of scope for sessions: AI search and LLM-parsed data (R1, R24, R29, R35, R43), hosting and CI
+  (R3, R4), e-mail alerts (R53), OAuth (R57), observability (R61).
+- The desktop repo (`../JobObserver/apps/desktop`) is not present in sessions: check parity against
+  `docs/FEATURE_PARITY.md` only.
+- Everything done in a session must be verifiable on the desktop: tests, e2e, typecheck, build.
+
 ## Gotchas
 
 - `VITE_*` env values are inlined at build time; restart the dev server after editing `.env.local`.

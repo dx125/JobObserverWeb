@@ -44,9 +44,8 @@ contract tests that pin the desktop's wire format, 61 green tests, a small depen
 
 Weak:
 
-- **Not production-grade yet.** Every project file is untracked in git (only the initial `LICENSE`
-  commit exists). No CI, linter, hosting, security headers or error boundary. Never opened in a
-  real browser.
+- **Not production-grade yet.** The code is committed and pushed to `main`, but `main` is not
+  protected (no required PRs or checks). No CI, linter, hosting, security headers or error boundary.
 - **One confirmed security gap.** The description sanitizer lets through full-screen `style`
   overlays and `<form>`s that post to external URLs (R20).
 - **Defects.** AI results always say "just now", sign-in drops deep links, nothing shows that
@@ -92,7 +91,7 @@ graph LR
 
 | # | Item | Why / evidence | Size | Needs | Status |
 | --- | --- | --- | --- | --- | --- |
-| R19 | **Put the code under version control**: commit the working tree, push, protect `main` (PRs + required checks) | Every file is untracked (`git status`). One lost disk loses the project, and CI and preview deploys (R4) need a remote | S | owner | todo |
+| R19 | **Protect `main`** (require PRs and passing checks). The code itself is already committed and pushed | Direct pushes to `main` can bypass review and the checks R4 adds; CI and preview deploys (R4) build on this | S | owner | todo |
 | R20 | **Harden description sanitization** in `HtmlContent`: forbid the `style` attribute and `form` / `input` / `button` / `select` / `textarea`; decide on remote images (D9); extend the hostile fixture and mutation-check the test | Verified with the app's DOMPurify options: `<div style="position:fixed;inset:0;z-index:9999">` (a full-screen overlay on the app's origin) and `<form action="https://evil..."><input type=password>` (credential phishing) both survive. Remote `<img>` lets sources track readers. Scripts, `<style>` and `on*` handlers are already stripped | S | D9 | todo |
 | R1 | **Apply the CORS patch to `ai-job-search`** and redeploy ([BACKEND_CONTRACT.md](BACKEND_CONTRACT.md#required-backend-change-cors), [ADR-013](DECISIONS.md#adr-013)) | AI search is the only desktop feature that cannot work from a browser. Source re-checked 2026-11-19: the handler still answers `OPTIONS` with 405 | S | BR1 | blocked (owner action in other repo) |
 | R21 | **Lint and format**: ESLint flat config (typescript-eslint, react-hooks, jsx-a11y), Prettier, and import-boundary rules that encode CLAUDE.md rules 1-3 (`no-restricted-imports` per folder, or `eslint-plugin-boundaries`). Fix what it finds, including `app/config.ts` importing the `SupabaseConfig` type from the adapter | The architecture rules are enforced by review only; a violation already slipped in during initial development (log: "Mock backend") | S | - | todo |
